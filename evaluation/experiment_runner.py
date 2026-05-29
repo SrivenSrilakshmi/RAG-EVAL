@@ -137,7 +137,7 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
     _print_table("Summary: ASR", summaries["asr"])
     _print_table("Summary: Leakage Rate", summaries["leakage"])
     _print_table("Summary: Correctness", summaries["correctness"])
-    _print_table("Summary: Proxy RAG Quality Metrics", summaries["ragas"])
+    _print_table("Summary: Proxy RAG Quality Metrics", summaries["proxy_rag_quality"])
     _print_table("Summary: Delta (Defense Effect)", summaries["delta"])
     _print_table("Summary: Utility Impact", summaries["utility"])
 
@@ -148,5 +148,5 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
         "correctness": correctness_path,
         "utility": utility_path,
         "delta": delta_path,
-        "proxy_rag_quality": proxy_quality_path,
+        "proxy_rag_quality": proxy_rag_quality_path,
     }

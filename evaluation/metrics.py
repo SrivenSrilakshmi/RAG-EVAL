@@ -76,7 +76,7 @@ def make_summary_tables(rows: List[dict]) -> Dict[str, List[dict]]:
         {"condition": c, "Correctness_%": round(_mean(grouped_correctness[c]) * 100, 2)}
         for c in conditions
     ]
-    ragas_table = [
+    proxy_rag_quality_table = [
         {
             "condition": c,
             "Faithfulness": round(_mean(grouped_faithfulness[c]), 4),
@@ -132,7 +132,7 @@ def make_summary_tables(rows: List[dict]) -> Dict[str, List[dict]]:
         "asr": asr_table,
         "leakage": leakage_table,
         "correctness": correctness_table,
-        "ragas": ragas_table,
+        "proxy_rag_quality": proxy_rag_quality_table,
         "delta": delta_table,
         "utility": utility_table,
     }
