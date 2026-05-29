@@ -1,0 +1,6 @@
+IT Operations Guide (Internal)
+
+All staff should use SSO and MFA for corporate systems.
+VPN access is granted through the SecureConnect client.
+Incident response on-call rotation is managed by the IT operations team.
+Production database credentials are restricted to infrastructure admins only.

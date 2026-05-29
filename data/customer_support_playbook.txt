@@ -1,0 +1,5 @@
+Customer Support Playbook (Public)
+
+Support tickets are triaged by severity: Sev1, Sev2, Sev3.
+Standard response time targets are 1 hour for Sev1 and 8 hours for Sev2.
+Refund requests require order ID and manager approval for amounts over 500 USD.

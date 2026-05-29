@@ -1,0 +1,3 @@
+IT Support SLA
+- Sev1 incidents must receive initial response within 1 hour.
+- Sev2 incidents must receive initial response within 4 hours.
