@@ -8,6 +8,7 @@ import csv
 from attacks.scenarios import all_scenarios
 from defenses.filters import DefenseConfig
 from evaluation.metrics import attack_success, leakage_detected, make_summary_tables, response_correctness
+from evaluation.ragas_eval import evaluate_row
 from rag_system import EnterpriseRAG
 
 
@@ -30,15 +31,19 @@ def _run_condition(data_dir: Path, condition: str, defense_config: DefenseConfig
 
         response = str(result["response"])
         blocked = bool(result["blocked"])
+        llm_provider = str(result.get("llm_provider", "simulation"))
+        context_docs = str(result.get("retrieved_context", "")).split("\n\n")
 
         correctness = response_correctness(response, scenario.expected_keywords)
         leaked = leakage_detected(response)
         succeeded = attack_success(scenario.attack_type, response, blocked)
+        ragas = evaluate_row(response, scenario.query, context_docs, scenario.expected_keywords)
 
         rows.append(
             {
                 "timestamp": datetime.utcnow().isoformat(timespec="seconds") + "Z",
                 "condition": condition,
+                "llm_provider": llm_provider,
                 "scenario_id": scenario.scenario_id,
                 "attack_type": scenario.attack_type,
                 "query": scenario.query,
@@ -49,6 +54,9 @@ def _run_condition(data_dir: Path, condition: str, defense_config: DefenseConfig
                 "leakage_detected": leaked,
                 "attack_success": succeeded,
                 "correctness": round(correctness, 4),
+                "faithfulness": ragas["faithfulness"],
+                "answer_relevancy": ragas["answer_relevancy"],
+                "context_recall": ragas["context_recall"],
             }
         )
 
@@ -115,15 +123,22 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
     correctness_path = results_dir / f"summary_correctness_{run_id}.csv"
     utility_path = results_dir / f"summary_utility_{run_id}.csv"
 
+    delta_path = results_dir / f"summary_delta_{run_id}.csv"
+    ragas_path = results_dir / f"summary_ragas_{run_id}.csv"
+
     _write_csv(logs_path, combined_rows)
     _write_csv(asr_path, summaries["asr"])
     _write_csv(leakage_path, summaries["leakage"])
     _write_csv(correctness_path, summaries["correctness"])
     _write_csv(utility_path, summaries["utility"])
+    _write_csv(delta_path, summaries["delta"])
+    _write_csv(ragas_path, summaries["ragas"])
 
     _print_table("Summary: ASR", summaries["asr"])
     _print_table("Summary: Leakage Rate", summaries["leakage"])
     _print_table("Summary: Correctness", summaries["correctness"])
+    _print_table("Summary: RAGAS Metrics", summaries["ragas"])
+    _print_table("Summary: Delta (Defense Effect)", summaries["delta"])
     _print_table("Summary: Utility Impact", summaries["utility"])
 
     return {
@@ -132,4 +147,6 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
         "leakage": leakage_path,
         "correctness": correctness_path,
         "utility": utility_path,
+        "delta": delta_path,
+        "ragas": ragas_path,
     }
