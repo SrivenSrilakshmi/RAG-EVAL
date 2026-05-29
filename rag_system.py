@@ -124,6 +124,7 @@ class EnterpriseRAG:
                     "response": response,
                     "blocked": blocked,
                     "block_reason": block_reason,
+                    "llm_provider": self.llm_provider,
                     "retrieved_sources": [],
                     "retrieved_context": "",
                 }

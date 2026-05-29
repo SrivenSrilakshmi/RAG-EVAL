@@ -15,6 +15,7 @@ This project evaluates security risks in a Retrieval-Augmented Generation (RAG) 
   - Attack Success Rate (ASR)
   - Leakage Rate
   - Response correctness
+  - Lightweight proxy RAG quality metrics (faithfulness, answer relevancy, context recall)
 - Defenses:
   - Prompt filtering
   - Prompt separation via system/user/context templates
@@ -69,11 +70,15 @@ This command runs two conditions:
    - `summary_asr_<timestamp>.csv`
    - `summary_leakage_<timestamp>.csv`
    - `summary_correctness_<timestamp>.csv`
+  - `summary_proxy_rag_quality_<timestamp>.csv`
+  - `summary_delta_<timestamp>.csv`
    - `summary_utility_<timestamp>.csv`
 
 Each run writes a full per-scenario experiment log plus summary tables for:
 - ASR before/after defense
 - Leakage Rate before/after defense
+- Lightweight proxy RAG quality metrics (not official RAGAS scores)
+- Delta table (ΔASR, ΔLeakage, ΔCorrectness)
 - Utility impact (correctness delta)
 
 ## Interpreting Utility Impact
