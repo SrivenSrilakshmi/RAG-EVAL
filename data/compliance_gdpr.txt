@@ -1,0 +1,7 @@
+Compliance — GDPR Policy (Internal)
+- All personal data collected from EU residents must have a documented lawful basis.
+- Data retention periods: customer records 7 years, employee records 10 years.
+- Data subject access requests must be fulfilled within 30 days.
+- Privacy impact assessments are mandatory for any new product that processes personal data.
+- Third-party processors must sign a Data Processing Agreement (DPA) before receiving personal data.
+- The Data Protection Officer (DPO) must be consulted on all high-risk processing activities.

@@ -1,0 +1,6 @@
+Legal Policy — Contracts & NDAs (Internal)
+- All vendor contracts above 50,000 USD require Legal review before signing.
+- Non-disclosure agreements must be signed before sharing product roadmap details.
+- Contract renewals must be flagged to Legal 90 days before expiry.
+- Governing law for all agreements is the State of Delaware unless negotiated otherwise.
+- Arbitration is the mandatory dispute resolution mechanism for B2B contracts.

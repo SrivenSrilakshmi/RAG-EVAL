@@ -1,0 +1,6 @@
+Legal Policy — Intellectual Property (Internal)
+- All code written by employees belongs to the company under work-for-hire rules.
+- Open-source components must be approved by Legal if they use GPL v3 or AGPL licenses.
+- Patent filings must be submitted within 12 months of invention disclosure.
+- Trademarks must be registered in all markets where revenue exceeds 1 million USD.
+- Employees may not file personal patents on work-related inventions without prior written approval.

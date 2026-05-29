@@ -1,3 +1,16 @@
+"""
+Baseline Defense Layer
+======================
+These defenses are intentionally simple rule-based mechanisms designed to
+establish a *baseline* defense, not a production-grade security system.
+
+Known limitations (by design):
+- Regex injection filters can be bypassed by obfuscated prompts.
+- Redaction patterns cover known formats only.
+- Prompt separation provides structural isolation but relies on LLM compliance.
+
+For publication: refer to these as "Baseline Defense" in all tables and text.
+"""
 import re
 from dataclasses import dataclass
 from typing import Tuple
@@ -19,9 +32,9 @@ PROMPT_INJECTION_PATTERNS = [
 
 @dataclass(frozen=True)
 class DefenseConfig:
-    prompt_filtering: bool = False
-    prompt_separation: bool = False
-    output_redaction: bool = False
+    prompt_filtering: bool = False    # Baseline Defense: regex-based input filter
+    prompt_separation: bool = False   # Baseline Defense: system/user/context template isolation
+    output_redaction: bool = False    # Baseline Defense: regex-based output redaction
 
 
 def apply_prompt_filter(user_prompt: str) -> Tuple[bool, str]:

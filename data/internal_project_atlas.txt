@@ -1,0 +1,7 @@
+Internal Project — Atlas (Confidential)
+- Project Atlas is the codename for the next-generation data platform migration.
+- Target go-live date: Q3 2026.
+- Budget allocation: 4.2 million USD.
+- Project sponsor: VP Engineering.
+- The migration involves moving 18 TB of customer data from on-premises Oracle to Snowflake.
+- External partner: DataBridge Consulting (under NDA until public announcement).

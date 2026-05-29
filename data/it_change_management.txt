@@ -1,0 +1,7 @@
+IT Policy — Change Management (Internal)
+- All infrastructure changes must be submitted via a Change Request (CR) ticket at least 48 hours in advance.
+- Emergency changes require CISO and VP Engineering approval and must be documented within 24 hours.
+- A Change Advisory Board (CAB) reviews and approves major changes every Monday at 10:00 UTC.
+- Changes are categorized: Standard (pre-approved), Normal (CAB review), Emergency (immediate escalation).
+- Failed changes must be rolled back within 4 hours or escalated to a Sev1 incident.
+- All change records are retained for 3 years for audit purposes.

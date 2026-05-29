@@ -1,0 +1,7 @@
+Engineering — Deployment Runbook (Internal)
+- Production deployments are restricted to Tuesday–Thursday between 10:00–16:00 UTC.
+- All deployments require a rollback plan documented in the Jira ticket.
+- Blue-green deployments are the standard pattern for services with SLA commitments.
+- Post-deployment smoke tests must complete successfully before traffic is shifted.
+- Database migrations must be backwards-compatible for at least one release cycle.
+- On-call engineer must be notified 30 minutes before any deployment begins.

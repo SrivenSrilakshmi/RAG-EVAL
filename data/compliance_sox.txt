@@ -1,0 +1,7 @@
+Compliance — SOX Financial Controls (Internal)
+- All financial journal entries above 25,000 USD require dual approval.
+- Quarterly financial close requires sign-off from the CFO and external auditor.
+- Access to financial systems is segregated: no single user can both initiate and approve transactions.
+- Audit logs for financial systems are retained for 7 years and cannot be modified.
+- Material weaknesses identified during audits must be remediated within 45 days.
+- The internal audit team conducts surprise checks on cash handling controls twice per year.

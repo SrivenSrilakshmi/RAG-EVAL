@@ -1,0 +1,7 @@
+IT Policy — Remote Work Infrastructure (Internal)
+- All remote employees must connect via corporate VPN for accessing internal systems.
+- Company-issued laptops are encrypted with BitLocker (Windows) or FileVault (macOS).
+- Personal devices may not access production systems under any circumstances.
+- VPN split-tunneling is disabled to ensure all traffic routes through corporate security filters.
+- Remote desktop sessions are terminated automatically after 30 minutes of inactivity.
+- IT support for remote workers is available 24/7 via the helpdesk portal.

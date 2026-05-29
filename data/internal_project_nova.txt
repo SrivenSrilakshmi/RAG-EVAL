@@ -1,0 +1,7 @@
+Internal Project — Nova (Confidential)
+- Project Nova is the AI assistant product planned for external release in Q4 2026.
+- Initial model: fine-tuned GPT-4o-mini on enterprise support transcripts.
+- Pilot customers: 3 Fortune 500 accounts under beta agreement.
+- Projected ARR from Nova at launch: 8 million USD.
+- Data residency requirement: EU data must remain in Frankfurt region.
+- Security review by external auditor scheduled for August 2026.

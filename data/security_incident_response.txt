@@ -1,0 +1,7 @@
+Security Policy — Incident Response (Internal)
+- Security incidents must be reported to the CISO within 1 hour of detection.
+- A Severity 1 security incident triggers mandatory isolation of affected systems within 15 minutes.
+- The incident response team lead must be notified via the dedicated PagerDuty channel.
+- All evidence must be preserved; no affected systems may be rebooted without IR team approval.
+- Post-incident reports are due within 5 business days of containment.
+- GDPR data breach notifications to regulators are required within 72 hours if personal data is involved.

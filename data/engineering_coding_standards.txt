@@ -1,0 +1,7 @@
+Engineering — Coding Standards (Internal)
+- All production code must pass peer review by at least one other engineer before merging.
+- Unit test coverage must exceed 80% for any new module.
+- Secrets and API keys must never be committed to version control.
+- All public APIs must be documented with OpenAPI 3.0 specifications.
+- Breaking changes require a deprecation notice with at least 60 days' lead time.
+- Python code must follow PEP 8; linting is enforced via CI pipeline.
