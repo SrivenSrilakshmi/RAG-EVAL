@@ -13,7 +13,9 @@ For publication: refer to these as "Baseline Defense" in all tables and text.
 """
 import re
 from dataclasses import dataclass
-from typing import Tuple
+from typing import List, Tuple
+
+from langchain_core.documents import Document
 
 
 SENSITIVE_PATTERNS = [
@@ -29,12 +31,21 @@ PROMPT_INJECTION_PATTERNS = [
     re.compile(r"confidential|secret", re.IGNORECASE),
 ]
 
+RETRIEVAL_SUSPICIOUS_PATTERNS = [
+    re.compile(r"ignore (all )?(previous|prior) instructions", re.IGNORECASE),
+    re.compile(r"system prompt", re.IGNORECASE),
+    re.compile(r"reveal|disclose|print", re.IGNORECASE),
+    re.compile(r"confidential|secret", re.IGNORECASE),
+    re.compile(r"always include", re.IGNORECASE),
+]
+
 
 @dataclass(frozen=True)
 class DefenseConfig:
     prompt_filtering: bool = False    # Baseline Defense: regex-based input filter
     prompt_separation: bool = False   # Baseline Defense: system/user/context template isolation
     output_redaction: bool = False    # Baseline Defense: regex-based output redaction
+    retrieval_trust_filter: bool = False  # Stronger defense: remove suspicious retrieved chunks
 
 
 def apply_prompt_filter(user_prompt: str) -> Tuple[bool, str]:
@@ -75,3 +86,13 @@ def redact_output(text: str) -> str:
 
 def contains_sensitive_content(text: str) -> bool:
     return any(pattern.search(text) for pattern in SENSITIVE_PATTERNS)
+
+
+def is_suspicious_retrieved_text(text: str) -> bool:
+    return any(pattern.search(text) for pattern in RETRIEVAL_SUSPICIOUS_PATTERNS)
+
+
+def sanitize_retrieved_docs(docs: List[Document]) -> Tuple[List[Document], int]:
+    sanitized = [doc for doc in docs if not is_suspicious_retrieved_text(doc.page_content)]
+    removed = len(docs) - len(sanitized)
+    return sanitized, removed

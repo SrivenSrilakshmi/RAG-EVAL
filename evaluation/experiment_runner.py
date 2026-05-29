@@ -7,7 +7,7 @@ import csv
 
 from attacks.scenarios import all_scenarios
 from defenses.filters import DefenseConfig
-from evaluation.metrics import attack_success, leakage_detected, make_summary_tables, response_correctness
+from evaluation.metrics import attack_success_refined, leakage_detected, make_summary_tables, response_correctness
 from evaluation.ragas_eval import evaluate_row
 from rag_system import EnterpriseRAG
 
@@ -33,10 +33,18 @@ def _run_condition(data_dir: Path, condition: str, defense_config: DefenseConfig
         blocked = bool(result["blocked"])
         llm_provider = str(result.get("llm_provider", "simulation"))
         context_docs = str(result.get("retrieved_context", "")).split("\n\n")
+        poisoned_retrieved = bool(result.get("poisoned_retrieved", False))
+        removed_suspicious_docs = int(result.get("removed_suspicious_docs", 0))
 
         correctness = response_correctness(response, scenario.expected_keywords)
         leaked = leakage_detected(response)
-        succeeded = attack_success(scenario.attack_type, response, blocked)
+        succeeded = attack_success_refined(
+            scenario.attack_type,
+            response,
+            blocked,
+            poisoned_retrieved,
+            removed_suspicious_docs,
+        )
         proxy_metrics = evaluate_row(response, scenario.query, context_docs, scenario.expected_keywords)
 
         rows.append(
@@ -51,6 +59,8 @@ def _run_condition(data_dir: Path, condition: str, defense_config: DefenseConfig
                 "response": response,
                 "blocked": blocked,
                 "retrieved_sources": "|".join(result["retrieved_sources"]),
+                "poisoned_retrieved": poisoned_retrieved,
+                "removed_suspicious_docs": removed_suspicious_docs,
                 "leakage_detected": leaked,
                 "attack_success": succeeded,
                 "correctness": round(correctness, 4),
@@ -100,6 +110,7 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
             prompt_filtering=False,
             prompt_separation=False,
             output_redaction=False,
+            retrieval_trust_filter=False,
         ),
     )
 
@@ -110,6 +121,7 @@ def run_full_experiment(project_root: Path) -> Dict[str, Path]:
             prompt_filtering=True,
             prompt_separation=True,
             output_redaction=True,
+            retrieval_trust_filter=True,
         ),
     )
 

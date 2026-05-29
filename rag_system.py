@@ -3,8 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import re
-import hashlib
-import os
 
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
@@ -15,6 +13,7 @@ from defenses.filters import (
     apply_prompt_filter,
     contains_sensitive_content,
     redact_output,
+    sanitize_retrieved_docs,
     separated_prompt,
 )
 from config import LLMConfig, get_llm_config
@@ -27,42 +26,45 @@ try:
 except ImportError:
     _OPENAI_AVAILABLE = False
 
+try:
+    from sentence_transformers import SentenceTransformer
+    _ST_AVAILABLE = True
+except ImportError:
+    _ST_AVAILABLE = False
 
-class TfidfEmbeddings(Embeddings):
-    """Deterministic local embeddings for reproducible FAISS experiments."""
 
-    def __init__(self, dimension: int = 128) -> None:
-        self.dimension = dimension
+class SentenceTransformerEmbeddings(Embeddings):
+    """Production-style semantic embeddings using all-MiniLM-L6-v2."""
 
-    def _hash_embed(self, text: str) -> List[float]:
+    def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2") -> None:
+        self.model_name = model_name
+        self._model = SentenceTransformer(model_name) if _ST_AVAILABLE else None
+
+    def _fallback_embed(self, text: str, dim: int = 128) -> List[float]:
+        # Deterministic fallback if sentence-transformers is unavailable.
         tokens = re.findall(r"[a-zA-Z0-9_-]+", text.lower())
-        vector = [0.0] * self.dimension
-        if not tokens:
-            return vector
-
-        for token in tokens:
-            digest = hashlib.sha256(token.encode("utf-8")).hexdigest()
-            slot = int(digest[:8], 16) % self.dimension
-            sign = -1.0 if int(digest[8:10], 16) % 2 else 1.0
-            vector[slot] += sign
-
+        vector = [0.0] * dim
+        for idx, token in enumerate(tokens):
+            vector[(hash(token) + idx) % dim] += 1.0
         norm = sum(v * v for v in vector) ** 0.5
-        if norm > 0:
-            vector = [v / norm for v in vector]
-        return vector
+        return [v / norm for v in vector] if norm > 0 else vector
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        return [self._hash_embed(text) for text in texts]
+        if self._model is not None:
+            return self._model.encode(texts, normalize_embeddings=True).tolist()
+        return [self._fallback_embed(text) for text in texts]
 
     def embed_query(self, text: str) -> List[float]:
-        return self._hash_embed(text)
+        if self._model is not None:
+            return self._model.encode([text], normalize_embeddings=True)[0].tolist()
+        return self._fallback_embed(text)
 
 
 class EnterpriseRAG:
     def __init__(self, data_dir: Path, defense_config: DefenseConfig):
         self.data_dir = data_dir
         self.defense_config = defense_config
-        self.embeddings = TfidfEmbeddings()
+        self.embeddings = SentenceTransformerEmbeddings()
         self.vector_store: FAISS | None = None
         self.llm_config: LLMConfig = get_llm_config()
         self._llm = self._init_llm()
@@ -130,6 +132,12 @@ class EnterpriseRAG:
                 }
 
         retrieved_docs = self.retrieve(query)
+        poisoned_retrieved = any(doc.metadata.get("source") == "poisoned_retrieval_note.txt" for doc in retrieved_docs)
+        removed_suspicious_docs = 0
+
+        if self.defense_config.retrieval_trust_filter:
+            retrieved_docs, removed_suspicious_docs = sanitize_retrieved_docs(retrieved_docs)
+
         context = "\n\n".join(doc.page_content for doc in retrieved_docs)
 
         if self.defense_config.prompt_separation:
@@ -160,6 +168,8 @@ class EnterpriseRAG:
             "llm_provider": self.llm_provider,
             "retrieved_sources": [doc.metadata.get("source", "unknown") for doc in retrieved_docs],
             "retrieved_context": context,
+            "poisoned_retrieved": poisoned_retrieved,
+            "removed_suspicious_docs": removed_suspicious_docs,
         }
 
     def _call_real_llm(self, prompt: str) -> str:
